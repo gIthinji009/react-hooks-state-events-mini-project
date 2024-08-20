@@ -1,19 +1,53 @@
-import React from "react";
+import React, { useState } from "react";
 
-function NewTaskForm() {
+function NewTaskForm({ categories, onTaskFormSubmit }) {
+  const [text, setText] = useState("");
+  const [category, setCategory] = useState(categories[0]);
+  const [error, setError] = useState("");
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    if (text.trim() === "") {
+      setError("Task details cannot be empty");
+      return;
+    }
+    setError("");
+    onTaskFormSubmit({ text, category });
+    setText("");
+    setCategory(categories[0]);
+  }
+
   return (
-    <form className="new-task-form">
-      <label>
+    <form className="new-task-form" onSubmit={handleSubmit}>
+      <label htmlFor="task-text">
         Details
-        <input type="text" name="text" />
+        <input
+          id="task-text"
+          type="text"
+          name="text"
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          aria-required="true"
+        />
       </label>
-      <label>
+      <label htmlFor="task-category">
         Category
-        <select name="category">
-          {/* render <option> elements for each category here */}
+        <select
+          id="task-category"
+          name="category"
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          aria-required="true"
+        >
+          {categories.map((cat) => (
+            <option key={cat} value={cat}>
+              {cat}
+            </option>
+          ))}
         </select>
       </label>
-      <input type="submit" value="Add task" />
+      {error && <p className="error">{error}</p>}
+      <button type="submit">Add task</button>
     </form>
   );
 }
